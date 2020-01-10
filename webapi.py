@@ -6,6 +6,7 @@ headers = {
     'Content-Type': 'application/json',
 }
 
+
 class IotqqWebapi:
     def __init__(self, api_url: str, robotqq: str):
         self.api_url = api_url
@@ -39,6 +40,20 @@ class IotqqWebapi:
         data = {"toUser": toUser, "sendToType": sendToType, "sendMsgType": "PicMsg", "content": content,
                 "picUrl": pic_url, "groupid": 0, "atUser": 0, "picBase64Buf": "", "fileMd5": fileMd5}
 
+        response = requests.post(self.api_url, headers=headers,
+                                 params=params, json=data)
+        print(response.text)
+
+    def _send_xml_msg(self, toUser: int, xml_content: str, sendToType: int):
+        print("send_text_msg", toUser, xml_content, sendToType)
+        params = (
+            ('qq', self.robotqq),
+            ('funcname', 'SendMsg'),
+        )
+
+        data = {"toUser": toUser, "sendToType": sendToType, "sendMsgType": "XmlMsg",
+                "content": xml_content, "groupid": 0, "atUser": 0, "replayInfo": None}
+        print(json.dumps(data))
         response = requests.post(self.api_url, headers=headers,
                                  params=params, json=data)
         print(response.text)
@@ -97,3 +112,23 @@ class IotqqWebapi:
         content = f"[ATUSER({at_content})]{content}"
         self._send_text_msg(toUser=group_id, content=content, sendToType=2)
 
+    def send_friend_xml_msg(self, qq, xml_content):
+        self._send_xml_msg(toUser=qq, xml_content=xml_content, sendToType=1)
+
+    def send_group_xml_msg(self, group_id, xml_content):
+        self._send_xml_msg(toUser=group_id, xml_content=xml_content, sendToType=2)
+
+    # brief  "[分享] xxx"
+    # url  "https://example.com"
+    # pic_url 显示的图片
+    # title 标题
+    # summary 内容
+    @staticmethod
+    def make_share_xml(brief, url, pic_url, title, summary):
+        content = f'<?xml version=\'1.0\' encoding=\'UTF-8\' standalone=\'yes\' ?><msg serviceID="1" ' \
+                  f'templateID="1" action="web" brief="{brief}" sourceMsgId="0" url="{url}" ' \
+                  f'flag="0" adverSign="0" multiMsgFlag="0"><item layout="2"><picture cover="{pic_url}" w="0" h="0" />' \
+                  f'<title>{title}</title><summary>{summary}</summary></item><source name="" icon="" ' \
+                  f'url="http://url.cn/UQoBHn" action="app" a_actionData="com.tencent.mtt://{url}"' \
+                  f' i_actionData="tencent100446242://{url}" appid="-1" /></msg>'
+        return content

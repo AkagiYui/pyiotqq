@@ -133,3 +133,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 译
+/web_api_test.py

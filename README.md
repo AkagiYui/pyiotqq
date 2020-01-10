@@ -4,3 +4,13 @@
 
 在群里联系IOTQQ开发者或者我(QQ:812605190)
 
+
+
+![使用教程]
+
+git clone https://github.com/golezi/pyiotqq
+
+修改example.py接收消息并处理
+
+发送消息相关在webapi.py中
+
